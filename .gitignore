@@ -1,0 +1,5 @@
+# Compiled
+*.pyc
+dqn/__pycache__/
+# Videos
+video/
