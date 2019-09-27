@@ -27,7 +27,8 @@ if __name__ == '__main__':
         "eps-end": 0.01,  # e-greedy end threshold
         "eps-fraction": 0.1,  # fraction of num-steps
         "print-freq": 10
-        # "load-checkpoint-file": True
+        # ,
+        # "load-checkpoint-file": "checkpoint.pth"
     }
 
     np.random.seed(hyper_params["seed"])
@@ -110,4 +111,5 @@ if __name__ == '__main__':
             print("mean 100 episode reward: {}".format(mean_100ep_reward))
             print("% time spent exploring: {}".format(int(100 * eps_threshold)))
             print("********************************************************")
-            torch.save(agent.policy_network.state_dict(), f'checkpoint_episode_{num_episodes}.pth')
+            torch.save(agent.policy_network.state_dict(), f'checkpoint.pth')
+            np.savetxt('rewards_per_episode.csv', episode_rewards, delimiter=',',fmt='%1.3f')
