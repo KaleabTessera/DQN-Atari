@@ -8,9 +8,6 @@ import torch
 import torch.nn.functional as F
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 class DQNAgent:
     def __init__(self,
                  observation_space: spaces.Box,
@@ -19,7 +16,8 @@ class DQNAgent:
                  use_double_dqn,
                  lr,
                  batch_size,
-                 gamma):
+                 gamma,
+                 device=torch.device("cpu" )):
         """
         Initialise the DQN algorithm using the Adam optimiser
         :param action_space: the action space of the environment
@@ -41,11 +39,15 @@ class DQNAgent:
         self.optimiser = torch.optim.Adam(
             self.policy_network.parameters(), lr=lr)
 
+        self.device = device
+
     def optimise_td_loss(self):
         """
         Optimise the TD-error over a single minibatch of transitions
         :return: the loss
         """
+        device = self.device
+
         states, actions, rewards, next_states, dones = self.memory.sample(self.batch_size)
         states = np.array(states) / 255.0
         next_states = np.array(next_states) / 255.0
@@ -88,6 +90,7 @@ class DQNAgent:
         :param state: the current state
         :return: the action to take
         """
+        device = self.device
         state = np.array(state) / 255.0
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         with torch.no_grad():
