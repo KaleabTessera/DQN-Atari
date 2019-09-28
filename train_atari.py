@@ -7,8 +7,20 @@ from dqn.agent import DQNAgent
 from dqn.replay_buffer import ReplayBuffer
 from dqn.wrappers import *
 import torch
+import argparse
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='DQN Atari')
+    parser.add_argument('--load-checkpoint-file', type=str, default=None, 
+                        help='Where checkpoint file should be loaded from (usually results/checkpoint.pth)')
+
+    args = parser.parse_args()
+    # If you have a checkpoint file, spend less time exploring
+    if(args.load_checkpoint_file):
+        eps_start= 0.01
+    else:
+        eps_start= 1
 
     hyper_params = {
         "seed": 42,  # which seed to use
@@ -23,12 +35,10 @@ if __name__ == '__main__':
         "learning-freq": 1,  # number of iterations between every optimization step
         "use-double-dqn": True,  # use double deep Q-learning
         "target-update-freq": 1000,  # number of iterations between every target network update
-        "eps-start": 1.0,  # e-greedy start threshold
+        "eps-start": eps_start,  # e-greedy start threshold
         "eps-end": 0.01,  # e-greedy end threshold
         "eps-fraction": 0.1,  # fraction of num-steps
         "print-freq": 10
-        # ,
-        # "load-checkpoint-file": "checkpoint.pth"
     }
 
     np.random.seed(hyper_params["seed"])
@@ -46,8 +56,8 @@ if __name__ == '__main__':
     env = PyTorchFrame(env)
     env = ClipRewardEnv(env)
     env = FrameStack(env, 4)
-    env = gym.wrappers.Monitor(env, './video/', video_callable=lambda episode_id: episode_id%10==0,force = True)
-
+    env = gym.wrappers.Monitor(
+        env, './video/', video_callable=lambda episode_id: episode_id % 10 == 0, force=True)
 
     replay_buffer = ReplayBuffer(hyper_params["replay-buffer-size"])
 
@@ -62,14 +72,14 @@ if __name__ == '__main__':
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     )
 
-    if("load-checkpoint-file" in hyper_params):
-        print(f"Loading a policy - { hyper_params['load-checkpoint-file'] } ")
-        agent.policy_network.load_state_dict(torch.load(hyper_params["load-checkpoint-file"]))
-
+    if(args.load_checkpoint_file):
+        print(f"Loading a policy - { args.load_checkpoint_file } ")
+        agent.policy_network.load_state_dict(
+            torch.load(args.load_checkpoint_file))
 
     eps_timesteps = hyper_params["eps-fraction"] * \
         float(hyper_params["num-steps"])
-    episode_rewards = [0.0]
+    episode_rewards = []
 
     state = env.reset()
     for t in range(hyper_params["num-steps"]):
@@ -82,7 +92,7 @@ if __name__ == '__main__':
             # Exploit
             action = agent.act(state)
         else:
-            # Explore 
+            # Explore
             action = env.action_space.sample()
 
         next_state, reward, done, info = env.step(action)
@@ -112,4 +122,5 @@ if __name__ == '__main__':
             print("% time spent exploring: {}".format(int(100 * eps_threshold)))
             print("********************************************************")
             torch.save(agent.policy_network.state_dict(), f'checkpoint.pth')
-            np.savetxt('rewards_per_episode.csv', episode_rewards, delimiter=',',fmt='%1.3f')
+            np.savetxt('rewards_per_episode.csv', episode_rewards,
+                       delimiter=',', fmt='%1.3f')
