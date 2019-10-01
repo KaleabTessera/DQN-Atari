@@ -28,6 +28,7 @@ if __name__ == '__main__':
         "replay-buffer-size": int(5e3),  # replay buffer size
         "learning-rate": 1e-4,  # learning rate for Adam optimizer
         "discount-factor": 0.99,  # discount factor
+        "dqn_type":"neurips",
         # total number of steps to run the environment for
         "num-steps": int(1e6),
         "batch-size": 32,  # number of transitions to optimize at the same time
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     env = ClipRewardEnv(env)
     env = FrameStack(env, 4)
     env = gym.wrappers.Monitor(
-        env, './video/', video_callable=lambda episode_id: episode_id % 10 == 0, force=True)
+        env, './video/', video_callable=lambda episode_id: episode_id % 50 == 0, force=True)
 
     replay_buffer = ReplayBuffer(hyper_params["replay-buffer-size"])
 
@@ -69,7 +70,8 @@ if __name__ == '__main__':
         lr=hyper_params['learning-rate'],
         batch_size=hyper_params['batch-size'],
         gamma=hyper_params['discount-factor'],
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        dqn_type=hyper_params["neurips"]
     )
 
     if(args.load_checkpoint_file):
@@ -79,7 +81,7 @@ if __name__ == '__main__':
 
     eps_timesteps = hyper_params["eps-fraction"] * \
         float(hyper_params["num-steps"])
-    episode_rewards = []
+    episode_rewards = [0.0]
 
     state = env.reset()
     for t in range(hyper_params["num-steps"]):

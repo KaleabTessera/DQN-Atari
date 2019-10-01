@@ -2,7 +2,8 @@
 from gym import spaces
 import numpy as np
 
-from dqn.model import DQN
+from dqn.model_nature import DQN as DQN_nature
+from dqn.model_neurips import DQN as DQN_neurips
 from dqn.replay_buffer import ReplayBuffer
 import torch
 import torch.nn.functional as F
@@ -17,7 +18,8 @@ class DQNAgent:
                  lr,
                  batch_size,
                  gamma,
-                 device=torch.device("cpu" )):
+                 device=torch.device("cpu" ),
+                 dqn_type="neurips"):
         """
         Initialise the DQN algorithm using the Adam optimiser
         :param action_space: the action space of the environment
@@ -32,12 +34,20 @@ class DQNAgent:
         self.batch_size = batch_size
         self.use_double_dqn = use_double_dqn
         self.gamma = gamma
+
+        if(dqn_type=="neurips"):
+            DQN = DQN_neurips
+        else:
+            DQN = DQN_nature
+
         self.policy_network = DQN(observation_space, action_space).to(device)
         self.target_network = DQN(observation_space, action_space).to(device)
         self.update_target_network()
         self.target_network.eval()
-        self.optimiser = torch.optim.Adam(
-            self.policy_network.parameters(), lr=lr)
+
+        self.optimiser = torch.optim.RMSprop(self.policy_network.parameters()
+            , lr=lr)        
+        ## self.optimiser = torch.optim.Adam(self.policy_network.parameters(), lr=lr)
 
         self.device = device
 
