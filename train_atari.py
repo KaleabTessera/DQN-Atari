@@ -71,7 +71,7 @@ if __name__ == '__main__':
         batch_size=hyper_params['batch-size'],
         gamma=hyper_params['discount-factor'],
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-        dqn_type=hyper_params["neurips"]
+        dqn_type=hyper_params["dqn_type"]
     )
 
     if(args.load_checkpoint_file):

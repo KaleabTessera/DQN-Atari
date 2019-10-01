@@ -25,7 +25,6 @@ class DQN(nn.Module):
         assert type(
             action_space) == spaces.Discrete, 'action_space must be of type Discrete'
         
-        print(observation_space.shape[0])
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels=observation_space.shape[0], out_channels=16, kernel_size=8, stride=4),
             nn.ReLU(),
