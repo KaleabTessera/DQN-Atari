@@ -4,11 +4,11 @@ learning](https://web.stanford.edu/class/psych209/Readings/MnihEtAlHassibis15Nat
 ## Results
 ### Video of Gameplay - DQN Nature Paper
 [![DQN Video](http://img.youtube.com/vi/DcyMFIKsVNI/0.jpg)](http://www.youtube.com/watch?v=DcyMFIKsVNI "DQN For Atari Pong")
-### Reward per Episode - DQN Nature Paper
+### Reward per Episode
 ![Rewards Per Episode](./results/results_per_episode.png)
 
 
-## Implementation
+## Summary of Implementation
 ### DQN Nature Architecture Implementation
 - Input : 84 × 84 × 4 image (using the last 4 frames of a history)
 - Conv Layer 1 : 32 8 × 8 filters with stride 4
@@ -47,7 +47,7 @@ python train_atari.py
 ```
 ### Use a trained agent
 ```
-python train_atari.py --load-checkpoint-file results/checkpoint.pth
+python train_atari.py --load-checkpoint-file results/checkpoint_dqn_nature.pth
 ```
 ## View Progress
 A video is recorded every 50 episodes. See videos in `/video/` folder. 
