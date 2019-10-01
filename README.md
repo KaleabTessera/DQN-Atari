@@ -49,3 +49,5 @@ python train_atari.py
 ```
 python train_atari.py --load-checkpoint-file results/checkpoint.pth
 ```
+## View Progress
+A video is recorded every 10 episodes. See videos in `/video/` folder. 
