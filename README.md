@@ -40,6 +40,10 @@ conda create -n dqn_pong
 ```
 pip install -r requirements.txt
 ```
+### To use `gym.wrappers.Monitor` to record the last episode
+```
+sudo apt-get install ffmpeg
+```
 
 ### Run Training from Scratch
 ```
